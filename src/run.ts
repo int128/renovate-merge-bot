@@ -3,7 +3,6 @@ import { GitHub } from '@actions/github/lib/utils'
 import { App } from '@octokit/app'
 import { queryPulls } from './queries/pulls'
 import { PullRequest, determinePullRequestAction, parsePayload } from './pulls'
-import { StatusState } from './generated/graphql-types'
 
 type Octokit = InstanceType<typeof GitHub>
 
@@ -55,14 +54,15 @@ const addEmptyCommitToTriggerWorkflow = async (octokit: Octokit, pull: PullReque
     parents: [pull.lastCommitSha],
     message: `Empty commit to trigger GitHub Actions`,
   })
-  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${pull.headRef} to commit ${commit.sha}`)
-  const { data: ref } = await octokit.rest.git.updateRef({
+  const ref = `heads/${pull.headRef}`
+  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${ref} to ${commit.sha}`)
+  await octokit.rest.git.updateRef({
     owner: pull.owner,
     repo: pull.repo,
-    ref: `refs/heads/${pull.headRef}`,
+    ref,
     sha: commit.sha,
   })
-  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref.ref}`)
+  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref}`)
 }
 
 const mergePullRequest = async (octokit: Octokit, pull: PullRequest) => {
