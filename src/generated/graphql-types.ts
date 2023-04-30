@@ -12,7 +12,7 @@ export type Scalars = {
   Float: number;
   Base64String: any;
   Date: any;
-  DateTime: any;
+  DateTime: string;
   GitObjectID: string;
   GitSSHRemote: any;
   GitTimestamp: any;

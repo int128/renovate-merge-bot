@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { GitHub } from '@actions/github/lib/utils'
 import { App } from '@octokit/app'
 import { queryPulls } from './queries/pulls'
-import { PullRequest, parsePullsQuery } from './pulls'
+import { PullRequest, determinePullRequestAction, parsePayload } from './pulls'
 import { StatusState } from './generated/graphql-types'
 
 type Octokit = InstanceType<typeof GitHub>
@@ -30,54 +30,45 @@ const processRepository = async (octokit: Octokit, owner: string, repo: string) 
   core.startGroup(`Pull Requests in ${owner}/${repo}`)
   core.info(JSON.stringify(rawPulls, undefined, 2))
   core.endGroup()
-  const pulls = parsePullsQuery(rawPulls)
+  const pulls = parsePayload(rawPulls)
   for (const pull of pulls) {
-    await processPullRequest(octokit, pull)
+    const action = determinePullRequestAction(pull)
+    if (action === 'TRIGGER_WORKFLOW') {
+      core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was added by GITHUB_TOKEN`)
+      core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
+      return await addEmptyCommitToTriggerWorkflow(octokit, pull)
+    }
+    if (action === 'AUTOMERGE') {
+      core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
+      core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging`)
+      return mergePullRequest(octokit, pull)
+    }
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: should be merged by user`)
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
-const processPullRequest = async (octokit: Octokit, pull: PullRequest) => {
-  if (!pull.createdByRenovate) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: not Renovate`)
-    return
-  }
-  if (!pull.mergeable) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: not mergeable`)
-    return
-  }
-
-  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was by GITHUB_TOKEN`)
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
-    const { data: commit } = await octokit.rest.git.createCommit({
-      owner: pull.owner,
-      repo: pull.repo,
-      tree: pull.lastCommitTreeSha,
-      parents: [pull.lastCommitSha],
-      message: `Empty commit to trigger GitHub Actions`,
-    })
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${pull.headRef} to commit ${commit.sha}`)
-    const { data: ref } = await octokit.rest.git.updateRef({
-      owner: pull.owner,
-      repo: pull.repo,
-      ref: pull.headRef,
-      sha: commit.sha,
-    })
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref.ref}`)
-    return
-  }
-
-  if (pull.automerge && pull.lastCommitStatus === StatusState.Success) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging`)
-    await octokit.rest.pulls.merge({
-      owner: pull.owner,
-      repo: pull.repo,
-      pull_number: pull.number,
-    })
-    return
-  }
+const addEmptyCommitToTriggerWorkflow = async (octokit: Octokit, pull: PullRequest) => {
+  const { data: commit } = await octokit.rest.git.createCommit({
+    owner: pull.owner,
+    repo: pull.repo,
+    tree: pull.lastCommitTreeSha,
+    parents: [pull.lastCommitSha],
+    message: `Empty commit to trigger GitHub Actions`,
+  })
+  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${pull.headRef} to commit ${commit.sha}`)
+  const { data: ref } = await octokit.rest.git.updateRef({
+    owner: pull.owner,
+    repo: pull.repo,
+    ref: `refs/heads/${pull.headRef}`,
+    sha: commit.sha,
+  })
+  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref.ref}`)
 }
 
-const sleep = (ms: number) => new Promise((f) => setTimeout(f, ms))
+const mergePullRequest = async (octokit: Octokit, pull: PullRequest) => {
+  await octokit.rest.pulls.merge({
+    owner: pull.owner,
+    repo: pull.repo,
+    pull_number: pull.number,
+  })
+}

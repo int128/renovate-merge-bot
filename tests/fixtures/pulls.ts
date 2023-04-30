@@ -33,7 +33,8 @@ export const payload: PullsQuery = {
               tree: {
                 oid: '400a326555a92be4b755055c4203195eb4fda010',
               },
-              author: {
+              committedDate: '2023-04-30T09:47:00Z',
+              committer: {
                 user: {
                   login: 'renovate[bot]',
                 },
@@ -60,7 +61,8 @@ export const payload: PullsQuery = {
               tree: {
                 oid: '8531bcd12dabf62565228111dc7028f29eddb682',
               },
-              author: {
+              committedDate: '2023-03-11T23:58:14Z',
+              committer: {
                 user: {
                   login: 'github-actions[bot]',
                 },
@@ -84,7 +86,8 @@ export const payload: PullsQuery = {
               tree: {
                 oid: '061bbed3cbd6e76a6ddaf4cdb84e0711b2c658b6',
               },
-              author: {
+              committedDate: '2022-05-28T23:41:47Z',
+              committer: {
                 user: {
                   login: 'renovate[bot]',
                 },

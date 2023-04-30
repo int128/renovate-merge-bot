@@ -9,13 +9,33 @@ export type PullRequest = {
   automerge: boolean
   createdByRenovate: boolean
   headRef: string
+  lastCommitTime: Date
   lastCommitByGitHubToken: boolean
   lastCommitStatus: StatusState | undefined
   lastCommitSha: string
   lastCommitTreeSha: string
 }
 
-export const parsePullsQuery = (pulls: PullsQuery): PullRequest[] => {
+export type PullRequestAction = 'TRIGGER_WORKFLOW' | 'AUTOMERGE' | 'LEAVE'
+
+export const determinePullRequestAction = (pull: PullRequest, now: Date = new Date()): PullRequestAction => {
+  if (!pull.createdByRenovate) {
+    return 'LEAVE'
+  }
+  if (!pull.mergeable) {
+    return 'LEAVE'
+  }
+  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
+    return 'TRIGGER_WORKFLOW'
+  }
+  const elapsedSec = (now.getTime() - pull.lastCommitTime.getTime()) / 1000
+  if (pull.automerge && pull.lastCommitStatus === StatusState.Success && elapsedSec > 3600) {
+    return 'AUTOMERGE'
+  }
+  return 'LEAVE'
+}
+
+export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
   if (pulls.repository == null) {
     throw new Error(`pulls.repository === ${String(pulls.repository)}`)
   }
@@ -42,7 +62,8 @@ export const parsePullsQuery = (pulls: PullsQuery): PullRequest[] => {
       automerge: pull.bodyText.includes('Automerge: Enabled'),
       createdByRenovate: pull.author?.login === 'renovate',
       headRef: pull.headRef.name,
-      lastCommitByGitHubToken: pull.headRef.target.author?.user?.login === 'github-actions[bot]',
+      lastCommitTime: new Date(pull.headRef.target.committedDate),
+      lastCommitByGitHubToken: pull.headRef.target.committer?.user?.login === 'github-actions[bot]',
       lastCommitStatus: pull.headRef.target.statusCheckRollup?.state,
       lastCommitSha: pull.headRef.target.oid,
       lastCommitTreeSha: pull.headRef.target.tree.oid,
