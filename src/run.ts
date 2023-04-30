@@ -42,24 +42,29 @@ const processPullRequest = async (octokit: Octokit, pull: PullRequest) => {
     core.info(`${pull.owner}/${pull.repo}#${pull.number}: not Renovate`)
     return
   }
+  if (!pull.mergeable) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: not mergeable`)
+    return
+  }
 
   if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
     core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was by GITHUB_TOKEN`)
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: closing`)
-    await octokit.rest.pulls.update({
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
+    const { data: commit } = await octokit.rest.git.createCommit({
       owner: pull.owner,
       repo: pull.repo,
-      pull_number: pull.number,
-      state: 'closed',
+      tree: pull.lastCommitTreeSha,
+      parents: [pull.lastCommitSha],
+      message: `Empty commit to trigger GitHub Actions`,
     })
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: reopening after 3s`)
-    await sleep(3000)
-    await octokit.rest.pulls.update({
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${pull.headRef} to commit ${commit.sha}`)
+    const { data: ref } = await octokit.rest.git.updateRef({
       owner: pull.owner,
       repo: pull.repo,
-      pull_number: pull.number,
-      state: 'open',
+      ref: pull.headRef,
+      sha: commit.sha,
     })
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref.ref}`)
     return
   }
 

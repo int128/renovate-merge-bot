@@ -1,14 +1,18 @@
 import { PullsQuery } from './generated/graphql'
-import { StatusState } from './generated/graphql-types'
+import { MergeableState, StatusState } from './generated/graphql-types'
 
 export type PullRequest = {
   owner: string
   repo: string
   number: number
+  mergeable: boolean
   automerge: boolean
   createdByRenovate: boolean
+  headRef: string
   lastCommitByGitHubToken: boolean
   lastCommitStatus: StatusState | undefined
+  lastCommitSha: string
+  lastCommitTreeSha: string
 }
 
 export const parsePullsQuery = (pulls: PullsQuery): PullRequest[] => {
@@ -34,10 +38,14 @@ export const parsePullsQuery = (pulls: PullsQuery): PullRequest[] => {
       owner: pulls.repository.owner.login,
       repo: pulls.repository.name,
       number: pull.number,
+      mergeable: pull.mergeable === MergeableState.Mergeable,
       automerge: pull.bodyText.includes('Automerge: Enabled'),
       createdByRenovate: pull.author?.login === 'renovate',
+      headRef: pull.headRef.name,
       lastCommitByGitHubToken: pull.headRef.target.author?.user?.login === 'github-actions[bot]',
       lastCommitStatus: pull.headRef.target.statusCheckRollup?.state,
+      lastCommitSha: pull.headRef.target.oid,
+      lastCommitTreeSha: pull.headRef.target.tree.oid,
     })
   }
   return parsed

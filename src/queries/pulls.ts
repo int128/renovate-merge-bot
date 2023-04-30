@@ -16,12 +16,17 @@ const query = /* GraphQL */ `
           author {
             login
           }
+          mergeable
           bodyText
           headRef {
             name
             target {
               __typename
               ... on Commit {
+                oid
+                tree {
+                  oid
+                }
                 author {
                   user {
                     login

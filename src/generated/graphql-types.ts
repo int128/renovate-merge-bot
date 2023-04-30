@@ -13,7 +13,7 @@ export type Scalars = {
   Base64String: any;
   Date: any;
   DateTime: any;
-  GitObjectID: any;
+  GitObjectID: string;
   GitSSHRemote: any;
   GitTimestamp: any;
   HTML: any;
