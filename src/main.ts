@@ -3,7 +3,8 @@ import { run } from './run'
 
 const main = async (): Promise<void> => {
   await run({
-    name: core.getInput('name', { required: true }),
+    appId: core.getInput('github-app-id', { required: true }),
+    appPrivateKey: core.getInput('github-app-private-key', { required: true }),
   })
 }
 
