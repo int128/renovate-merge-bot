@@ -7,7 +7,7 @@ export type PullRequest = {
   number: number
   automerge: boolean
   createdByRenovate: boolean
-  lastCommitByRenovate: boolean
+  lastCommitByGitHubToken: boolean
   lastCommitStatus: StatusState | undefined
 }
 
@@ -36,7 +36,7 @@ export const parsePullsQuery = (pulls: PullsQuery): PullRequest[] => {
       number: pull.number,
       automerge: pull.bodyText.includes('Automerge: Enabled'),
       createdByRenovate: pull.author?.login === 'renovate',
-      lastCommitByRenovate: pull.headRef.target.author?.user?.login === 'renovate[bot]',
+      lastCommitByGitHubToken: pull.headRef.target.author?.user?.login === 'github-actions[bot]',
       lastCommitStatus: pull.headRef.target.statusCheckRollup?.state,
     })
   }

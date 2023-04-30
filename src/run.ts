@@ -42,22 +42,37 @@ const processPullRequest = async (octokit: Octokit, pull: PullRequest) => {
     core.info(`${pull.owner}/${pull.repo}#${pull.number}: not Renovate`)
     return
   }
-  if (pull.lastCommitByRenovate) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: no need to update`)
+
+  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was by GITHUB_TOKEN`)
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: closing`)
+    await octokit.rest.pulls.update({
+      owner: pull.owner,
+      repo: pull.repo,
+      pull_number: pull.number,
+      state: 'closed',
+    })
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: reopening after 3s`)
+    await sleep(3000)
+    await octokit.rest.pulls.update({
+      owner: pull.owner,
+      repo: pull.repo,
+      pull_number: pull.number,
+      state: 'open',
+    })
     return
   }
-  if (pull.lastCommitStatus === undefined) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: reopen to trigger GitHub Actions`)
-    // await octokit.rest.pulls.update({
-    //   owner: pull.owner,
-    //   repo: pull.repo,
-    //   pull_number: pull.number,
-    //   state: 'closed',
-    // })
-    return
-  }
+
   if (pull.automerge && pull.lastCommitStatus === StatusState.Success) {
     core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging`)
+    await octokit.rest.pulls.merge({
+      owner: pull.owner,
+      repo: pull.repo,
+      pull_number: pull.number,
+    })
     return
   }
 }
+
+const sleep = (ms: number) => new Promise((f) => setTimeout(f, ms))
