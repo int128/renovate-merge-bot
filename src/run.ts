@@ -1,6 +1,9 @@
 import * as core from '@actions/core'
 import { GitHub } from '@actions/github/lib/utils'
 import { App } from '@octokit/app'
+import { queryPulls } from './queries/pulls'
+import { PullRequest, parsePullsQuery } from './pulls'
+import { StatusState } from './generated/graphql-types'
 
 type Octokit = InstanceType<typeof GitHub>
 
@@ -9,7 +12,6 @@ type Inputs = {
   appPrivateKey: string
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export const run = async (inputs: Inputs): Promise<void> => {
   const app = new App({
     appId: inputs.appId,
@@ -24,12 +26,38 @@ export const run = async (inputs: Inputs): Promise<void> => {
 }
 
 const processRepository = async (octokit: Octokit, owner: string, repo: string) => {
-  const { data: pulls } = await octokit.rest.pulls.list({
-    owner,
-    repo,
-    state: 'open',
-  })
+  const rawPulls = await queryPulls(octokit, { owner, repo })
+  core.startGroup(`Pull Requests in ${owner}/${repo}`)
+  core.info(JSON.stringify(rawPulls, undefined, 2))
+  core.endGroup()
+  const pulls = parsePullsQuery(rawPulls)
   for (const pull of pulls) {
-    core.info(`${owner}/${repo}#${pull.number} ${pull.user?.login ?? ''}`)
+    await processPullRequest(octokit, pull)
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await
+const processPullRequest = async (octokit: Octokit, pull: PullRequest) => {
+  if (!pull.createdByRenovate) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: not Renovate`)
+    return
+  }
+  if (pull.lastCommitByRenovate) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: no need to update`)
+    return
+  }
+  if (pull.lastCommitStatus === undefined) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: reopen to trigger GitHub Actions`)
+    // await octokit.rest.pulls.update({
+    //   owner: pull.owner,
+    //   repo: pull.repo,
+    //   pull_number: pull.number,
+    //   state: 'closed',
+    // })
+    return
+  }
+  if (pull.automerge && pull.lastCommitStatus === StatusState.Success) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
+    return
   }
 }
