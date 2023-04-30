@@ -19,7 +19,7 @@ on:
       - .github/workflows/ts.yaml
 
 jobs:
-  test:
+  run:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -33,10 +33,11 @@ jobs:
       - run: yarn build
       - run: yarn package
 
-      - name: e2e-test
+      - name: int128/renovate-merge-bot
         uses: ./
         with:
-          name: foo
+          github-app-id: ${{ secrets.BOT_APP_ID }}
+          github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
   generate:
     runs-on: ubuntu-latest

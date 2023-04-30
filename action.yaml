@@ -2,8 +2,11 @@ name: typescript-action
 description: Template of TypeScript Action
 
 inputs:
-  name:
-    description: example input
+  github-app-id:
+    description: GitHub App ID
+    required: true
+  github-app-private-key:
+    description: GitHub App private key
     required: true
 
 runs:
