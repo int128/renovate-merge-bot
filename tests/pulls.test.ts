@@ -1,10 +1,10 @@
-import { StatusState } from '../src/generated/graphql-types'
-import { PullRequestAction, determinePullRequestAction, parsePayload } from '../src/pulls'
+import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types'
+import { PullRequest, PullRequestAction, determinePullRequestAction, parsePayload } from '../src/pulls'
 import { payload } from './fixtures/pulls'
 
 describe('parsePayload', () => {
   test('parse an actual payload of GitHub GraphQL API', () => {
-    expect(parsePayload(payload)).toStrictEqual([
+    expect(parsePayload(payload)).toStrictEqual<PullRequest[]>([
       {
         automerge: false,
         createdByRenovate: true,
@@ -15,9 +15,11 @@ describe('parsePayload', () => {
         lastCommitStatus: StatusState.Pending,
         lastCommitTreeSha: '400a326555a92be4b755055c4203195eb4fda010',
         mergeable: true,
+        id: 'PR_kwDOG4DTyM5N-piU',
         number: 382,
         owner: 'int128',
         repo: 'list-associated-pull-requests-action',
+        defaultMergeMethod: PullRequestMergeMethod.Squash,
       },
       {
         automerge: true,
@@ -29,9 +31,11 @@ describe('parsePayload', () => {
         lastCommitStatus: undefined,
         lastCommitTreeSha: '8531bcd12dabf62565228111dc7028f29eddb682',
         mergeable: false,
+        id: 'PR_kwDOG4DTyM5KR8Ys',
         number: 343,
         owner: 'int128',
         repo: 'list-associated-pull-requests-action',
+        defaultMergeMethod: PullRequestMergeMethod.Squash,
       },
       {
         automerge: false,
@@ -43,9 +47,11 @@ describe('parsePayload', () => {
         lastCommitStatus: StatusState.Success,
         lastCommitTreeSha: '061bbed3cbd6e76a6ddaf4cdb84e0711b2c658b6',
         mergeable: true,
+        id: 'PR_kwDOG4DTyM44opIm',
         number: 98,
         owner: 'int128',
         repo: 'list-associated-pull-requests-action',
+        defaultMergeMethod: PullRequestMergeMethod.Squash,
       },
     ])
   })
@@ -56,9 +62,11 @@ describe('determinePullRequestAction', () => {
     headRef: 'renovate/example',
     lastCommitSha: '0123456789012345678901234567890123456789',
     lastCommitTreeSha: '0123456789012345678901234567890123456789',
+    id: 'PR_example',
     number: 1,
     owner: 'example',
     repo: 'example',
+    defaultMergeMethod: PullRequestMergeMethod.Squash,
   }
   const now = new Date('2023-04-30T13:00:00Z')
 

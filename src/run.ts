@@ -3,6 +3,7 @@ import { GitHub } from '@actions/github/lib/utils'
 import { App } from '@octokit/app'
 import { queryPulls } from './queries/pulls'
 import { PullRequest, determinePullRequestAction, parsePayload } from './pulls'
+import { mergePullRequest } from './queries/merge'
 
 type Octokit = InstanceType<typeof GitHub>
 
@@ -39,8 +40,11 @@ const processRepository = async (octokit: Octokit, owner: string, repo: string) 
     }
     if (action === 'AUTOMERGE') {
       core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
-      core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging`)
-      return mergePullRequest(octokit, pull)
+      core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging by ${pull.defaultMergeMethod}`)
+      return await mergePullRequest(octokit, {
+        id: pull.id,
+        mergeMethod: pull.defaultMergeMethod,
+      })
     }
     core.info(`${pull.owner}/${pull.repo}#${pull.number}: should be merged by user`)
   }
@@ -63,12 +67,4 @@ const addEmptyCommitToTriggerWorkflow = async (octokit: Octokit, pull: PullReque
     sha: commit.sha,
   })
   core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref}`)
-}
-
-const mergePullRequest = async (octokit: Octokit, pull: PullRequest) => {
-  await octokit.rest.pulls.merge({
-    owner: pull.owner,
-    repo: pull.repo,
-    pull_number: pull.number,
-  })
 }

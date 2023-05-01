@@ -10,8 +10,10 @@ const query = /* GraphQL */ `
         login
       }
       name
+      viewerDefaultMergeMethod
       pullRequests(states: [OPEN], orderBy: { field: UPDATED_AT, direction: DESC }, first: 100) {
         nodes {
+          id
           number
           author {
             login

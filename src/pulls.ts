@@ -1,10 +1,12 @@
 import { PullsQuery } from './generated/graphql'
-import { MergeableState, StatusState } from './generated/graphql-types'
+import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types'
 
 export type PullRequest = {
   owner: string
   repo: string
+  id: string
   number: number
+  defaultMergeMethod: PullRequestMergeMethod
   mergeable: boolean
   automerge: boolean
   createdByRenovate: boolean
@@ -57,7 +59,9 @@ export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
     parsed.push({
       owner: pulls.repository.owner.login,
       repo: pulls.repository.name,
+      id: pull.id,
       number: pull.number,
+      defaultMergeMethod: pulls.repository.viewerDefaultMergeMethod,
       mergeable: pull.mergeable === MergeableState.Mergeable,
       automerge: pull.bodyText.includes('Automerge: Enabled'),
       createdByRenovate: pull.author?.login === 'renovate',

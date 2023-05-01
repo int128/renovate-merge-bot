@@ -1,5 +1,5 @@
 import { PullsQuery } from '../../src/generated/graphql'
-import { MergeableState, StatusState } from '../../src/generated/graphql-types'
+import { MergeableState, PullRequestMergeMethod, StatusState } from '../../src/generated/graphql-types'
 
 /*
 https://docs.github.com/en/graphql/overview/explorer
@@ -15,9 +15,11 @@ export const payload: PullsQuery = {
       login: 'int128',
     },
     name: 'list-associated-pull-requests-action',
+    viewerDefaultMergeMethod: PullRequestMergeMethod.Squash,
     pullRequests: {
       nodes: [
         {
+          id: 'PR_kwDOG4DTyM5N-piU',
           number: 382,
           author: {
             login: 'renovate',
@@ -46,6 +48,7 @@ export const payload: PullsQuery = {
           },
         },
         {
+          id: 'PR_kwDOG4DTyM5KR8Ys',
           number: 343,
           author: {
             login: 'renovate',
@@ -72,6 +75,7 @@ export const payload: PullsQuery = {
           },
         },
         {
+          id: 'PR_kwDOG4DTyM44opIm',
           number: 98,
           author: {
             login: 'int128',
