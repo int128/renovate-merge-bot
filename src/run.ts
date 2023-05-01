@@ -2,8 +2,7 @@ import * as core from '@actions/core'
 import { GitHub } from '@actions/github/lib/utils'
 import { App } from '@octokit/app'
 import { queryPulls } from './queries/pulls'
-import { PullRequest, determinePullRequestAction, parsePayload } from './pulls'
-import { mergePullRequest } from './queries/merge'
+import { determinePullRequestAction, parsePayload } from './pulls'
 
 type Octokit = InstanceType<typeof GitHub>
 
@@ -33,38 +32,7 @@ const processRepository = async (octokit: Octokit, owner: string, repo: string) 
   const pulls = parsePayload(rawPulls)
   for (const pull of pulls) {
     const action = determinePullRequestAction(pull)
-    if (action === 'TRIGGER_WORKFLOW') {
-      core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was added by GITHUB_TOKEN`)
-      core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
-      return await addEmptyCommitToTriggerWorkflow(octokit, pull)
-    }
-    if (action === 'AUTOMERGE') {
-      core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
-      core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging by ${pull.defaultMergeMethod}`)
-      return await mergePullRequest(octokit, {
-        id: pull.id,
-        mergeMethod: pull.defaultMergeMethod,
-      })
-    }
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: should be merged by user`)
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: ${String(action)}`)
+    await action.execute(octokit, pull)
   }
-}
-
-const addEmptyCommitToTriggerWorkflow = async (octokit: Octokit, pull: PullRequest) => {
-  const { data: commit } = await octokit.rest.git.createCommit({
-    owner: pull.owner,
-    repo: pull.repo,
-    tree: pull.lastCommitTreeSha,
-    parents: [pull.lastCommitSha],
-    message: `Empty commit to trigger GitHub Actions`,
-  })
-  const ref = `heads/${pull.headRef}`
-  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${ref} to ${commit.sha}`)
-  await octokit.rest.git.updateRef({
-    owner: pull.owner,
-    repo: pull.repo,
-    ref,
-    sha: commit.sha,
-  })
-  core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref}`)
 }

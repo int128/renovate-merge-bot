@@ -1,5 +1,10 @@
+import * as core from '@actions/core'
 import { PullsQuery } from './generated/graphql'
 import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types'
+import { mergePullRequest } from './queries/merge'
+import { GitHub } from '@actions/github/lib/utils'
+
+type Octokit = InstanceType<typeof GitHub>
 
 export type PullRequest = {
   owner: string
@@ -16,25 +21,6 @@ export type PullRequest = {
   lastCommitStatus: StatusState | undefined
   lastCommitSha: string
   lastCommitTreeSha: string
-}
-
-export type PullRequestAction = 'TRIGGER_WORKFLOW' | 'AUTOMERGE' | 'LEAVE'
-
-export const determinePullRequestAction = (pull: PullRequest, now: Date = new Date()): PullRequestAction => {
-  if (!pull.createdByRenovate) {
-    return 'LEAVE'
-  }
-  if (!pull.mergeable) {
-    return 'LEAVE'
-  }
-  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
-    return 'TRIGGER_WORKFLOW'
-  }
-  const elapsedSec = (now.getTime() - pull.lastCommitTime.getTime()) / 1000
-  if (pull.automerge && pull.lastCommitStatus === StatusState.Success && elapsedSec > 3600) {
-    return 'AUTOMERGE'
-  }
-  return 'LEAVE'
 }
 
 export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
@@ -74,4 +60,64 @@ export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
     })
   }
   return parsed
+}
+
+export type PullRequestAction = AddEmptyCommitAction | MergeAction | LeaveAction
+
+export const determinePullRequestAction = (pull: PullRequest, now: Date = new Date()): PullRequestAction => {
+  if (!pull.createdByRenovate) {
+    return new LeaveAction()
+  }
+  if (!pull.mergeable) {
+    return new LeaveAction()
+  }
+  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
+    return new AddEmptyCommitAction()
+  }
+  const elapsedSec = (now.getTime() - pull.lastCommitTime.getTime()) / 1000
+  if (pull.automerge && pull.lastCommitStatus === StatusState.Success && elapsedSec > 3600) {
+    return new MergeAction()
+  }
+  return new LeaveAction()
+}
+
+export class AddEmptyCommitAction {
+  async execute(octokit: Octokit, pull: PullRequest) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was added by GITHUB_TOKEN`)
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
+    const { data: commit } = await octokit.rest.git.createCommit({
+      owner: pull.owner,
+      repo: pull.repo,
+      tree: pull.lastCommitTreeSha,
+      parents: [pull.lastCommitSha],
+      message: `Empty commit to trigger GitHub Actions`,
+    })
+    const ref = `heads/${pull.headRef}`
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${ref} to ${commit.sha}`)
+    await octokit.rest.git.updateRef({
+      owner: pull.owner,
+      repo: pull.repo,
+      ref,
+      sha: commit.sha,
+    })
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref}`)
+  }
+}
+
+export class MergeAction {
+  async execute(octokit: Octokit, pull: PullRequest) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging by ${pull.defaultMergeMethod}`)
+    return await mergePullRequest(octokit, {
+      id: pull.id,
+      mergeMethod: pull.defaultMergeMethod,
+    })
+  }
+}
+
+export class LeaveAction {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async execute(_: Octokit, pull: PullRequest) {
+    core.info(`${pull.owner}/${pull.repo}#${pull.number}: should be merged by user`)
+  }
 }
