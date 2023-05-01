@@ -1,5 +1,12 @@
 import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types'
-import { PullRequest, PullRequestAction, determinePullRequestAction, parsePayload } from '../src/pulls'
+import {
+  AddEmptyCommitAction,
+  LeaveAction,
+  MergeAction,
+  PullRequest,
+  determinePullRequestAction,
+  parsePayload,
+} from '../src/pulls'
 import { payload } from './fixtures/pulls'
 
 describe('parsePayload', () => {
@@ -83,7 +90,7 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('AUTOMERGE')
+    expect(action).toBeInstanceOf(MergeAction)
   })
 
   test('recent pull request', () => {
@@ -99,7 +106,7 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('LEAVE')
+    expect(action).toBeInstanceOf(LeaveAction)
   })
 
   test('last commit was by GITHUB_TOKEN and workflow was not run', () => {
@@ -115,7 +122,7 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('TRIGGER_WORKFLOW')
+    expect(action).toBeInstanceOf(AddEmptyCommitAction)
   })
 
   test('workflow is running', () => {
@@ -131,7 +138,7 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('LEAVE')
+    expect(action).toBeInstanceOf(LeaveAction)
   })
 
   test('conflicting pull request', () => {
@@ -147,7 +154,7 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('LEAVE')
+    expect(action).toBeInstanceOf(LeaveAction)
   })
 
   test('user pull request', () => {
@@ -163,6 +170,6 @@ describe('determinePullRequestAction', () => {
       },
       now
     )
-    expect(action).toBe<PullRequestAction>('LEAVE')
+    expect(action).toBeInstanceOf(LeaveAction)
   })
 })
