@@ -1,5 +1,5 @@
-name: typescript-action
-description: Template of TypeScript Action
+name: renovate-merge-bot
+description: Auto-merge Renovate pull requests in GitHub Actions
 
 inputs:
   github-app-id:
