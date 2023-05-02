@@ -10,7 +10,8 @@ inputs:
     required: true
   dry-run:
     description: Set true to dry-run
-    required: false
+    required: true
+    default: false
 
 runs:
   using: 'node16'
