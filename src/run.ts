@@ -35,7 +35,9 @@ const processRepository = async (octokit: Octokit, owner: string, repo: string, 
   for (const pull of pulls) {
     const action = determinePullRequestAction(pull)
     core.info(`Pull Request ${owner}/${repo}#${pull.number}: ${action.toString()}`)
-    if (!dryRun) {
+    if (dryRun) {
+      core.info(`(dry-run)`)
+    } else {
       await action.execute(octokit, pull)
     }
   }

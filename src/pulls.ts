@@ -89,7 +89,7 @@ export class AddEmptyCommitAction implements PullRequestAction {
     return `Add an empty commit to trigger GitHub Actions, because the last committer was GITHUB_TOKEN`
   }
   async execute(octokit: Octokit, pull: PullRequest) {
-    core.info(`Creating an empty commit`)
+    core.info(`Creating an empty commit on ${pull.lastCommitSha}`)
     const { data: commit } = await octokit.rest.git.createCommit({
       owner: pull.owner,
       repo: pull.repo,
@@ -123,7 +123,7 @@ export class MergeAction implements PullRequestAction {
 
 export class LeaveAction implements PullRequestAction {
   toString(): string {
-    return `It will be merged by user`
+    return `Will be merged by user`
   }
   execute(): Promise<void> {
     return new Promise((r) => r())
