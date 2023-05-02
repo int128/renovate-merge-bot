@@ -47,6 +47,6 @@ const query = /* GraphQL */ `
   }
 `
 
-export const queryPulls = async (o: Octokit, v: PullsQueryVariables): Promise<PullsQuery> => {
+export const fetchPulls = async (o: Octokit, v: PullsQueryVariables): Promise<PullsQuery> => {
   return await o.graphql<PullsQuery>(query, v)
 }

@@ -19,7 +19,7 @@ on:
       - .github/workflows/ts.yaml
 
 jobs:
-  run:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -33,11 +33,12 @@ jobs:
       - run: yarn build
       - run: yarn package
 
-      - name: int128/renovate-merge-bot
+      - name: Run int128/renovate-merge-bot
         uses: ./
         with:
           github-app-id: ${{ secrets.BOT_APP_ID }}
           github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          dry-run: true
 
   generate:
     runs-on: ubuntu-latest

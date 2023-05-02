@@ -62,7 +62,10 @@ export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
   return parsed
 }
 
-export type PullRequestAction = AddEmptyCommitAction | MergeAction | LeaveAction
+export type PullRequestAction = {
+  execute(octokit: Octokit, pull: PullRequest): Promise<void>
+  toString(): string
+}
 
 export const determinePullRequestAction = (pull: PullRequest, now: Date = new Date()): PullRequestAction => {
   if (!pull.createdByRenovate) {
@@ -81,10 +84,12 @@ export const determinePullRequestAction = (pull: PullRequest, now: Date = new Da
   return new LeaveAction()
 }
 
-export class AddEmptyCommitAction {
+export class AddEmptyCommitAction implements PullRequestAction {
+  toString(): string {
+    return `Add an empty commit to trigger GitHub Actions, because the last committer was GITHUB_TOKEN`
+  }
   async execute(octokit: Octokit, pull: PullRequest) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: last commit was added by GITHUB_TOKEN`)
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: adding an empty commit to trigger GitHub Actions`)
+    core.info(`Creating an empty commit`)
     const { data: commit } = await octokit.rest.git.createCommit({
       owner: pull.owner,
       repo: pull.repo,
@@ -92,32 +97,35 @@ export class AddEmptyCommitAction {
       parents: [pull.lastCommitSha],
       message: `Empty commit to trigger GitHub Actions`,
     })
-    const ref = `heads/${pull.headRef}`
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updating ref ${ref} to ${commit.sha}`)
+    core.info(`Updating ref ${pull.headRef} to the commit ${commit.sha}`)
     await octokit.rest.git.updateRef({
       owner: pull.owner,
       repo: pull.repo,
-      ref,
+      ref: `heads/${pull.headRef}`,
       sha: commit.sha,
     })
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: updated ref ${ref}`)
+    core.info(`Updated ref ${pull.headRef}`)
   }
 }
 
-export class MergeAction {
+export class MergeAction implements PullRequestAction {
+  toString(): string {
+    return `Ready to automerge`
+  }
   async execute(octokit: Octokit, pull: PullRequest) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: ready to automerge`)
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: merging by ${pull.defaultMergeMethod}`)
-    return await mergePullRequest(octokit, {
+    core.info(`Merging by method ${pull.defaultMergeMethod}`)
+    await mergePullRequest(octokit, {
       id: pull.id,
       mergeMethod: pull.defaultMergeMethod,
     })
   }
 }
 
-export class LeaveAction {
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async execute(_: Octokit, pull: PullRequest) {
-    core.info(`${pull.owner}/${pull.repo}#${pull.number}: should be merged by user`)
+export class LeaveAction implements PullRequestAction {
+  toString(): string {
+    return `It will be merged by user`
+  }
+  execute(): Promise<void> {
+    return new Promise((r) => r())
   }
 }
