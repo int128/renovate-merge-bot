@@ -14,7 +14,7 @@ If any commit is added to a pull request, Renovate does not merge it.
 <img width="920" alt="image" src="https://user-images.githubusercontent.com/321266/235568740-0d0418a2-f02b-49e1-ac4e-dd6a7aaed73e.png">
 
 If the commit status is unknown, Renovate does not merge it.
-For example, some workflow adds a commit using `GITHUB_TOKEN` which does not trigger GitHub Actions.
+For example, a workflow adds a commit using `GITHUB_TOKEN` which does not trigger GitHub Actions.
 
 <img width="920" alt="image" src="https://user-images.githubusercontent.com/321266/235568978-55c50732-ef6c-4e3d-986b-85da8757c941.png">
 
@@ -36,9 +36,15 @@ If the following conditions are satisfied, this action merges it.
 - The commit status is success
 - The last commit was created at least 1 hour ago
 
+Finally, a pull request is automatically merged even if a commit was added using `GITHUB_TOKEN`.
+
+Here is the example of [#5](https://github.com/int128/renovate-merge-bot/pull/5).
+
+<img width="920" alt="image" src="https://user-images.githubusercontent.com/321266/235579499-ee5cb36b-eb98-44b0-b7fd-9cb979c71b6b.png">
+
 ## Getting Started
 
-### New GitHub App
+### Create GitHub App
 
 Create your GitHub App from [this link](https://github.com/settings/apps/new?webhook_active=false&url=https://github.com/int128/renovate-merge-bot&contents=write&pull_requests=write&workflows=write).
 Here are the required permissions:
@@ -49,7 +55,7 @@ Here are the required permissions:
 
 Install the GitHub App to your repositories.
 
-### New repository and workflow
+### Create repository and workflow
 
 Create a new repository.
 Add the following secrets:
@@ -78,10 +84,10 @@ jobs:
           github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 ```
 
-### Confirmation
+### Confirm the behavior
 
 When the workflow runs, this action finds open pull requests from repositories which the GitHub App is installed.
-It performs either of the following actions:
+It executes either of the following actions:
 
 - Add an empty commit to trigger GitHub Actions
 - Merge the pull request
