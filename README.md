@@ -40,7 +40,7 @@ Finally, a pull request is automatically merged even if a commit was added using
 
 Here is the example of [#5](https://github.com/int128/renovate-merge-bot/pull/5).
 
-<img width="920" alt="image" src="https://user-images.githubusercontent.com/321266/235579499-ee5cb36b-eb98-44b0-b7fd-9cb979c71b6b.png">
+<img width="920" alt="image" src="https://user-images.githubusercontent.com/321266/236614510-8cb0e42f-13f5-4d38-af3b-cd9d1d7d62a9.png">
 
 ## Getting Started
 
