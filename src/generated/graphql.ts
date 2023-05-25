@@ -1,7 +1,7 @@
 import * as Types from './graphql-types';
 
 export type MergePullRequestMutationVariables = Types.Exact<{
-  id: Types.Scalars['ID'];
+  id: Types.Scalars['ID']['input'];
   mergeMethod?: Types.InputMaybe<Types.PullRequestMergeMethod>;
 }>;
 
@@ -9,8 +9,8 @@ export type MergePullRequestMutationVariables = Types.Exact<{
 export type MergePullRequestMutation = { __typename?: 'Mutation', mergePullRequest?: { __typename?: 'MergePullRequestPayload', clientMutationId?: string | null } | null };
 
 export type PullsQueryVariables = Types.Exact<{
-  owner: Types.Scalars['String'];
-  repo: Types.Scalars['String'];
+  owner: Types.Scalars['String']['input'];
+  repo: Types.Scalars['String']['input'];
 }>;
 
 
