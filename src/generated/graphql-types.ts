@@ -21294,6 +21294,8 @@ export type RepositoryRuleset = Node & {
   bypassMode: RuleBypassMode;
   /** The set of conditions that must evaluate to true for this ruleset to apply */
   conditions: RepositoryRuleConditions;
+  /** Identifies the date and time when the object was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** Identifies the primary key from the database. */
   databaseId?: Maybe<Scalars['Int']['output']>;
   /** The enforcement level of this ruleset */
@@ -21307,6 +21309,8 @@ export type RepositoryRuleset = Node & {
   source: RuleSource;
   /** Target of the ruleset. */
   target?: Maybe<RepositoryRulesetTarget>;
+  /** Identifies the date and time when the object was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
