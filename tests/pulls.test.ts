@@ -88,7 +88,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: StatusState.Success,
         mergeable: true,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(MergeAction)
   })
@@ -104,7 +104,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: StatusState.Success,
         mergeable: true,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(LeaveAction)
   })
@@ -120,7 +120,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: undefined,
         mergeable: true,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(AddEmptyCommitAction)
   })
@@ -136,7 +136,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: StatusState.Pending,
         mergeable: true,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(LeaveAction)
   })
@@ -152,7 +152,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: StatusState.Success,
         mergeable: false,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(LeaveAction)
   })
@@ -168,7 +168,7 @@ describe('determinePullRequestAction', () => {
         lastCommitStatus: StatusState.Success,
         mergeable: true,
       },
-      now
+      now,
     )
     expect(action).toBeInstanceOf(LeaveAction)
   })
