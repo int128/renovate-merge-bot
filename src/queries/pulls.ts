@@ -1,7 +1,5 @@
-import { GitHub } from '@actions/github/lib/utils'
+import { Octokit } from '@octokit/rest'
 import { PullsQuery, PullsQueryVariables } from '../generated/graphql'
-
-type Octokit = InstanceType<typeof GitHub>
 
 const query = /* GraphQL */ `
   query pulls($owner: String!, $repo: String!) {

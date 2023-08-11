@@ -2,9 +2,7 @@ import * as core from '@actions/core'
 import { PullsQuery } from './generated/graphql'
 import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types'
 import { mergePullRequest } from './queries/merge'
-import { GitHub } from '@actions/github/lib/utils'
-
-type Octokit = InstanceType<typeof GitHub>
+import { Octokit } from '@octokit/rest'
 
 export type PullRequest = {
   owner: string
