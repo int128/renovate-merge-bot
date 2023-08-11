@@ -1,7 +1,5 @@
-import { GitHub } from '@actions/github/lib/utils'
+import { Octokit } from '@octokit/rest'
 import { MergePullRequestMutation, MergePullRequestMutationVariables } from '../generated/graphql'
-
-type Octokit = InstanceType<typeof GitHub>
 
 const query = /* GraphQL */ `
   mutation mergePullRequest($id: ID!, $mergeMethod: PullRequestMergeMethod) {
