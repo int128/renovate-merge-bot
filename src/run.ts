@@ -1,10 +1,8 @@
 import * as core from '@actions/core'
-import { GitHub } from '@actions/github/lib/utils'
-import { App } from '@octokit/app'
-import { fetchPulls } from './queries/pulls'
+import { Octokit } from '@octokit/rest'
 import { determinePullRequestAction, parsePayload } from './pulls'
-
-type Octokit = InstanceType<typeof GitHub>
+import { fetchPulls } from './queries/pulls'
+import { App } from '@octokit/app'
 
 type Inputs = {
   appId: string
@@ -16,7 +14,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
   const app = new App({
     appId: inputs.appId,
     privateKey: inputs.appPrivateKey,
-    Octokit: GitHub,
+    Octokit,
   })
   const { data: appAuthenticated } = await app.octokit.rest.apps.getAuthenticated()
   core.info(`Authenticated as ${appAuthenticated.name}`)
