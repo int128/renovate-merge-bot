@@ -1,8 +1,8 @@
 import assert from 'assert'
 import * as core from '@actions/core'
-import { PullsQuery } from './generated/graphql'
+import { ListPullRequestQuery } from './generated/graphql'
 import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types'
-import { mergePullRequest } from './queries/merge'
+import { mergePullRequest } from './queries/mergePullRequest'
 import { Octokit } from '@octokit/rest'
 
 export type PullRequest = {
@@ -22,7 +22,7 @@ export type PullRequest = {
   lastCommitTreeSha: string
 }
 
-export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
+export const parseListPullRequestQuery = (pulls: ListPullRequestQuery): PullRequest[] => {
   assert(pulls.repository != null)
   assert(pulls.repository.pullRequests.nodes != null)
 

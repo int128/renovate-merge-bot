@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
-import { determinePullRequestAction, parsePayload } from './pulls'
-import { fetchPulls } from './queries/pulls'
+import { determinePullRequestAction, parseListPullRequestQuery } from './pulls'
+import { listPullRequest } from './queries/listPullRequest'
 import { App } from '@octokit/app'
 
 type Inputs = {
@@ -24,12 +24,12 @@ export const run = async (inputs: Inputs): Promise<void> => {
 }
 
 const processRepository = async (octokit: Octokit, owner: string, repo: string, dryRun: boolean) => {
-  const pullsQuery = await fetchPulls(octokit, { owner, repo })
-  core.startGroup(`Repository ${owner}/${repo}`)
-  core.info(JSON.stringify(pullsQuery, undefined, 2))
+  const listPullRequestQuery = await listPullRequest(octokit, { owner, repo })
+  core.startGroup(`ListPullRequestQuery(${owner}/${repo})`)
+  core.info(JSON.stringify(listPullRequestQuery, undefined, 2))
   core.endGroup()
 
-  const pulls = parsePayload(pullsQuery)
+  const pulls = parseListPullRequestQuery(listPullRequestQuery)
   for (const pull of pulls) {
     const action = determinePullRequestAction(pull)
     core.info(`Pull Request ${owner}/${repo}#${pull.number}: ${action.toString()}`)

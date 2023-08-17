@@ -5,13 +5,13 @@ import {
   MergeAction,
   PullRequest,
   determinePullRequestAction,
-  parsePayload,
+  parseListPullRequestQuery,
 } from '../src/pulls'
 import { payload } from './fixtures/pulls'
 
-describe('parsePayload', () => {
+describe('parseListPullRequestQuery', () => {
   test('parse an actual payload of GitHub GraphQL API', () => {
-    expect(parsePayload(payload)).toStrictEqual<PullRequest[]>([
+    expect(parseListPullRequestQuery(payload)).toStrictEqual<PullRequest[]>([
       {
         automerge: false,
         createdByRenovate: true,

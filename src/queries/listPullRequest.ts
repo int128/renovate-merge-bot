@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/rest'
-import { PullsQuery, PullsQueryVariables } from '../generated/graphql'
+import { ListPullRequestQuery, ListPullRequestQueryVariables } from '../generated/graphql'
 
 const query = /* GraphQL */ `
-  query pulls($owner: String!, $repo: String!) {
+  query listPullRequest($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
       owner {
         login
@@ -45,6 +45,5 @@ const query = /* GraphQL */ `
   }
 `
 
-export const fetchPulls = async (o: Octokit, v: PullsQueryVariables): Promise<PullsQuery> => {
-  return await o.graphql<PullsQuery>(query, v)
-}
+export const listPullRequest = async (o: Octokit, v: ListPullRequestQueryVariables) =>
+  await o.graphql<ListPullRequestQuery>(query, v)

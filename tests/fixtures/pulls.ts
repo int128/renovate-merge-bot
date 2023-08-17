@@ -1,4 +1,4 @@
-import { PullsQuery } from '../../src/generated/graphql'
+import { ListPullRequestQuery } from '../../src/generated/graphql'
 import { MergeableState, PullRequestMergeMethod, StatusState } from '../../src/generated/graphql-types'
 
 /*
@@ -9,7 +9,7 @@ https://docs.github.com/en/graphql/overview/explorer
   "repo": "list-associated-pull-requests-action"
 }
 */
-export const payload: PullsQuery = {
+export const payload: ListPullRequestQuery = {
   repository: {
     owner: {
       login: 'int128',
