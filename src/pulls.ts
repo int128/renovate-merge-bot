@@ -1,7 +1,8 @@
+import assert from 'assert'
 import * as core from '@actions/core'
-import { PullsQuery } from './generated/graphql'
+import { ListPullRequestQuery } from './generated/graphql'
 import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types'
-import { mergePullRequest } from './queries/merge'
+import { mergePullRequest } from './queries/mergePullRequest'
 import { Octokit } from '@octokit/rest'
 
 export type PullRequest = {
@@ -21,25 +22,17 @@ export type PullRequest = {
   lastCommitTreeSha: string
 }
 
-export const parsePayload = (pulls: PullsQuery): PullRequest[] => {
-  if (pulls.repository == null) {
-    throw new Error(`pulls.repository === ${String(pulls.repository)}`)
-  }
-  if (pulls.repository.pullRequests.nodes == null) {
-    throw new Error(`pulls.repository.pullRequests.nodes === ${String(pulls.repository.pullRequests.nodes)}`)
-  }
+export const parseListPullRequestQuery = (pulls: ListPullRequestQuery): PullRequest[] => {
+  assert(pulls.repository != null)
+  assert(pulls.repository.pullRequests.nodes != null)
 
   const parsed: PullRequest[] = []
   for (const pull of pulls.repository.pullRequests.nodes) {
-    if (pull === null) {
-      throw new Error(`pull === ${String(pull)}`)
-    }
-    if (pull.headRef == null) {
-      throw new Error(`pull.headRef === ${String(pull.headRef)}`)
-    }
-    if (pull.headRef.target?.__typename !== 'Commit') {
-      throw new Error(`pull.headRef.target.__typename === ${String(pull.headRef.target?.__typename)}`)
-    }
+    assert(pull != null)
+    assert(pull.headRef != null)
+    assert(pull.headRef.target != null)
+    assert.strictEqual(pull.headRef.target.__typename, 'Commit')
+
     parsed.push({
       owner: pulls.repository.owner.login,
       repo: pulls.repository.name,
