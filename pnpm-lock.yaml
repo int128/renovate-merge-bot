@@ -9,11 +9,11 @@ dependencies:
     specifier: 1.10.1
     version: 1.10.1
   '@octokit/app':
-    specifier: 14.0.2
-    version: 14.0.2
+    specifier: 14.1.0
+    version: 14.1.0
   '@octokit/rest':
-    specifier: 20.0.2
-    version: 20.0.2
+    specifier: 20.1.0
+    version: 20.1.0
   graphql:
     specifier: 16.8.1
     version: 16.8.1
@@ -1864,8 +1864,8 @@ packages:
       fastq: 1.17.1
     dev: true
 
-  /@octokit/app@14.0.2:
-    resolution: {integrity: sha512-NCSCktSx+XmjuSUVn2dLfqQ9WIYePGP95SDJs4I9cn/0ZkeXcPkaoCLl64Us3dRKL2ozC7hArwze5Eu+/qt1tg==}
+  /@octokit/app@14.1.0:
+    resolution: {integrity: sha512-g3uEsGOQCBl1+W1rgfwoRFUIR6PtvB2T1E4RpygeUU5LrLvlOqcxrt5lfykIeRpUPpupreGJUYl70fqMDXdTpw==}
     engines: {node: '>= 18'}
     dependencies:
       '@octokit/auth-app': 6.0.4
@@ -2059,8 +2059,8 @@ packages:
       universal-user-agent: 6.0.1
     dev: false
 
-  /@octokit/rest@20.0.2:
-    resolution: {integrity: sha512-Ux8NDgEraQ/DMAU1PlAohyfBBXDwhnX2j33Z1nJNziqAfHi70PuxkFYIcIt8aIAxtRE7KVuKp8lSR8pA0J5iOQ==}
+  /@octokit/rest@20.1.0:
+    resolution: {integrity: sha512-STVO3itHQLrp80lvcYB2UIKoeil5Ctsgd2s1AM+du3HqZIR35ZH7WE9HLwUOLXH0myA0y3AGNPo8gZtcgIbw0g==}
     engines: {node: '>= 18'}
     dependencies:
       '@octokit/core': 5.1.0
