@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
-import { determinePullRequestAction, parseListPullRequestQuery } from './pulls'
-import { listPullRequest } from './queries/listPullRequest'
+import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
+import { listPullRequest } from './queries/listPullRequest.js'
 import { App } from '@octokit/app'
 
 type Inputs = {
