@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest'
-import { ListPullRequestQuery, ListPullRequestQueryVariables } from '../generated/graphql'
+import { ListPullRequestQuery, ListPullRequestQueryVariables } from '../generated/graphql.js'
 
 const query = /* GraphQL */ `
   query listPullRequest($owner: String!, $repo: String!) {

@@ -1,4 +1,4 @@
-import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types'
+import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types.js'
 import {
   AddEmptyCommitAction,
   LeaveAction,
@@ -6,8 +6,8 @@ import {
   PullRequest,
   determinePullRequestAction,
   parseListPullRequestQuery,
-} from '../src/pulls'
-import { payload } from './fixtures/pulls'
+} from '../src/pulls.js'
+import { payload } from './fixtures/pulls.js'
 
 describe('parseListPullRequestQuery', () => {
   test('parse an actual payload of GitHub GraphQL API', () => {

@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest'
-import { MergePullRequestMutation, MergePullRequestMutationVariables } from '../generated/graphql'
+import { MergePullRequestMutation, MergePullRequestMutationVariables } from '../generated/graphql.js'
 
 const query = /* GraphQL */ `
   mutation mergePullRequest($id: ID!, $mergeMethod: PullRequestMergeMethod) {
