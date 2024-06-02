@@ -11,12 +11,12 @@ type Inputs = {
 }
 
 export const run = async (inputs: Inputs): Promise<void> => {
-  const appAuth = createAppAuth({
-    appId: inputs.appId,
-    privateKey: inputs.appPrivateKey,
-  })
   const octokit = new Octokit({
-    authStrategy: appAuth,
+    authStrategy: createAppAuth,
+    auth: {
+      appId: inputs.appId,
+      privateKey: inputs.appPrivateKey,
+    },
   })
   const { data: appAuthenticated } = await octokit.rest.apps.getAuthenticated()
   core.info(`Authenticated as ${appAuthenticated.name}`)
