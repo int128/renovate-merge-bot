@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
+import { createAppAuth } from '@octokit/auth-app'
 import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
 import { listPullRequest } from './queries/listPullRequest.js'
-import { App } from '@octokit/app'
 
 type Inputs = {
   appId: string
@@ -11,14 +11,20 @@ type Inputs = {
 }
 
 export const run = async (inputs: Inputs): Promise<void> => {
-  const app = new App({
+  const appAuth = createAppAuth({
     appId: inputs.appId,
     privateKey: inputs.appPrivateKey,
-    Octokit,
   })
-  const { data: appAuthenticated } = await app.octokit.rest.apps.getAuthenticated()
+  const octokit = new Octokit({
+    authStrategy: appAuth,
+  })
+  const { data: appAuthenticated } = await octokit.rest.apps.getAuthenticated()
   core.info(`Authenticated as ${appAuthenticated.name}`)
-  for await (const { octokit, repository } of app.eachRepository.iterator()) {
+  const repos = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, {
+    per_page: 100,
+  })
+  core.info(`This app is installed into ${repos.total_count} repositories`)
+  for (const repository of repos.repositories) {
     await processRepository(octokit, repository.owner.login, repository.name, inputs.dryRun)
   }
 }
