@@ -20,11 +20,13 @@ export const run = async (inputs: Inputs): Promise<void> => {
     authStrategy: createAppAuth,
     auth,
   })
+  const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
+  core.info(`Authenticated as ${authenticated.name}`)
   const installations = await octokit.paginate(octokit.apps.listInstallations, {
     per_page: 100,
   })
   for (const installation of installations) {
-    core.info(`Found the installation ${installation.id}`)
+    core.info(`Processing the installation ${installation.id}`)
     await processInstallation(inputs, installation.id)
   }
 }
@@ -40,15 +42,22 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
     authStrategy: createAppAuth,
     auth,
   })
-  const { data: appAuthenticated } = await octokit.rest.apps.getAuthenticated()
-  core.info(`Authenticated as ${appAuthenticated.name}`)
-  const { data: repos } = await octokit.rest.apps.listReposAccessibleToInstallation({
-    per_page: 100,
-  })
-  core.info(`This app is installed into ${repos.total_count} repositories`)
-  for (const repository of repos.repositories) {
+  const repositories = await paginateListReposAccessibleToInstallation(octokit, { per_page: 100 })
+  for (const repository of repositories) {
+    core.info(`Processing the repository ${repository.owner.login}`)
     await processRepository(octokit, repository.owner.login, repository.name, inputs.dryRun)
   }
+}
+
+// https://github.com/octokit/plugin-paginate-rest.js/issues/350
+const paginateListReposAccessibleToInstallation = async (
+  octokit: Octokit,
+  params: Parameters<typeof octokit.rest.apps.listReposAccessibleToInstallation>[0],
+) => {
+  const repos = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, params)
+  return repos as unknown as Awaited<
+    ReturnType<typeof octokit.rest.apps.listReposAccessibleToInstallation>
+  >['data']['repositories']
 }
 
 const processRepository = async (octokit: Octokit, owner: string, repo: string, dryRun: boolean) => {
