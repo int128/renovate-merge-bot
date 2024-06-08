@@ -24,6 +24,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
     per_page: 100,
   })
   for (const installation of installations) {
+    core.info(`Found the installation ${installation.id}`)
     await processInstallation(inputs, installation.id)
   }
 }
@@ -44,6 +45,7 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
   const repos = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, {
     per_page: 100,
   })
+  core.info(JSON.stringify(repos))
   core.info(`This app is installed into ${repos.total_count} repositories`)
   for (const repository of repos.repositories) {
     await processRepository(octokit, repository.owner.login, repository.name, inputs.dryRun)
