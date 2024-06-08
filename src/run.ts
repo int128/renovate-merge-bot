@@ -42,10 +42,9 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
   })
   const { data: appAuthenticated } = await octokit.rest.apps.getAuthenticated()
   core.info(`Authenticated as ${appAuthenticated.name}`)
-  const repos = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, {
+  const { data: repos } = await octokit.rest.apps.listReposAccessibleToInstallation({
     per_page: 100,
   })
-  core.info(JSON.stringify(repos))
   core.info(`This app is installed into ${repos.total_count} repositories`)
   for (const repository of repos.repositories) {
     await processRepository(octokit, repository.owner.login, repository.name, inputs.dryRun)
