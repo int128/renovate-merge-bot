@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
-import { createAppAuth } from '@octokit/auth-app'
+import { StrategyOptions, createAppAuth } from '@octokit/auth-app'
 import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
 import { listPullRequest } from './queries/listPullRequest.js'
 
@@ -11,12 +11,33 @@ type Inputs = {
 }
 
 export const run = async (inputs: Inputs): Promise<void> => {
+  const auth: StrategyOptions = {
+    type: 'app',
+    appId: inputs.appId,
+    privateKey: inputs.appPrivateKey,
+  }
   const octokit = new Octokit({
     authStrategy: createAppAuth,
-    auth: {
-      appId: inputs.appId,
-      privateKey: inputs.appPrivateKey,
-    },
+    auth,
+  })
+  const installations = await octokit.paginate(octokit.apps.listInstallations, {
+    per_page: 100,
+  })
+  for (const installation of installations) {
+    await processInstallation(inputs, installation.id)
+  }
+}
+
+const processInstallation = async (inputs: Inputs, installationId: number) => {
+  const auth: StrategyOptions = {
+    type: 'installation',
+    appId: inputs.appId,
+    privateKey: inputs.appPrivateKey,
+    installationId,
+  }
+  const octokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth,
   })
   const { data: appAuthenticated } = await octokit.rest.apps.getAuthenticated()
   core.info(`Authenticated as ${appAuthenticated.name}`)
