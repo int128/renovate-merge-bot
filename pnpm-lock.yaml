@@ -12,10 +12,10 @@ importers:
         specifier: 1.10.1
         version: 1.10.1
       '@octokit/auth-app':
-        specifier: ^7.1.0
+        specifier: 7.1.0
         version: 7.1.0
       '@octokit/core':
-        specifier: ^6.1.2
+        specifier: 6.1.2
         version: 6.1.2
       '@octokit/rest':
         specifier: 20.1.0
