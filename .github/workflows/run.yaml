@@ -4,6 +4,14 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 * * * *'
+  pull_request:
+    paths:
+      - .github/workflows/run.yaml
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run.yaml
 
 jobs:
   renovate-merge-bot:
