@@ -10,9 +10,9 @@
   "type": "module",
   "dependencies": {
     "@actions/core": "1.11.1",
-    "@octokit/auth-app": "7.1.0",
+    "@octokit/auth-app": "7.1.1",
     "@octokit/core": "6.1.2",
-    "@octokit/rest": "20.1.0",
+    "@octokit/rest": "20.1.1",
     "graphql": "16.9.0"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "@graphql-codegen/import-types-preset": "3.0.0",
     "@graphql-codegen/typescript": "4.1.1",
     "@graphql-codegen/typescript-operations": "4.3.1",
-    "@octokit/graphql-schema": "15.15.0",
+    "@octokit/graphql-schema": "15.25.0",
     "@tsconfig/node20": "20.1.4",
     "@types/jest": "29.5.14",
     "@types/node": "20.17.6",
