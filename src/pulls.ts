@@ -54,65 +54,78 @@ export const parseListPullRequestQuery = (pulls: ListPullRequestQuery): PullRequ
 }
 
 export type PullRequestAction = {
-  execute(octokit: Octokit, pull: PullRequest): Promise<void>
+  pull: PullRequest
+  execute(octokit: Octokit): Promise<void>
   toString(): string
 }
 
 export const determinePullRequestAction = (pull: PullRequest, now: Date = new Date()): PullRequestAction => {
   if (!pull.createdByRenovate) {
-    return new LeaveAction()
+    return new LeaveAction(pull)
   }
   if (!pull.mergeable) {
-    return new LeaveAction()
+    return new LeaveAction(pull)
   }
   if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
-    return new AddEmptyCommitAction()
+    return new AddEmptyCommitAction(pull)
   }
   const elapsedSec = (now.getTime() - pull.lastCommitTime.getTime()) / 1000
   if (pull.automerge && pull.lastCommitStatus === StatusState.Success && elapsedSec > 3600) {
-    return new MergeAction()
+    return new MergeAction(pull)
   }
-  return new LeaveAction()
+  return new LeaveAction(pull)
 }
 
 export class AddEmptyCommitAction implements PullRequestAction {
+  readonly pull: PullRequest
+  constructor(pull: PullRequest) {
+    this.pull = pull
+  }
   toString(): string {
     return `Add an empty commit to trigger GitHub Actions, because the last committer was GITHUB_TOKEN`
   }
-  async execute(octokit: Octokit, pull: PullRequest) {
-    core.info(`Creating an empty commit on ${pull.lastCommitSha}`)
+  async execute(octokit: Octokit) {
+    core.info(`Creating an empty commit on ${this.pull.lastCommitSha}`)
     const { data: commit } = await octokit.rest.git.createCommit({
-      owner: pull.owner,
-      repo: pull.repo,
-      tree: pull.lastCommitTreeSha,
-      parents: [pull.lastCommitSha],
+      owner: this.pull.owner,
+      repo: this.pull.repo,
+      tree: this.pull.lastCommitTreeSha,
+      parents: [this.pull.lastCommitSha],
       message: `Empty commit to trigger GitHub Actions`,
     })
-    core.info(`Updating ref ${pull.headRef} to the commit ${commit.sha}`)
+    core.info(`Updating ref ${this.pull.headRef} to the commit ${commit.sha}`)
     await octokit.rest.git.updateRef({
-      owner: pull.owner,
-      repo: pull.repo,
-      ref: `heads/${pull.headRef}`,
+      owner: this.pull.owner,
+      repo: this.pull.repo,
+      ref: `heads/${this.pull.headRef}`,
       sha: commit.sha,
     })
-    core.info(`Updated ref ${pull.headRef}`)
+    core.info(`Updated ref ${this.pull.headRef}`)
   }
 }
 
 export class MergeAction implements PullRequestAction {
+  readonly pull: PullRequest
+  constructor(pull: PullRequest) {
+    this.pull = pull
+  }
   toString(): string {
     return `Ready to automerge`
   }
-  async execute(octokit: Octokit, pull: PullRequest) {
-    core.info(`Merging by method ${pull.defaultMergeMethod}`)
+  async execute(octokit: Octokit) {
+    core.info(`Merging by method ${this.pull.defaultMergeMethod}`)
     await mergePullRequest(octokit, {
-      id: pull.id,
-      mergeMethod: pull.defaultMergeMethod,
+      id: this.pull.id,
+      mergeMethod: this.pull.defaultMergeMethod,
     })
   }
 }
 
 export class LeaveAction implements PullRequestAction {
+  readonly pull: PullRequest
+  constructor(pull: PullRequest) {
+    this.pull = pull
+  }
   toString(): string {
     return `Will be merged by user`
   }

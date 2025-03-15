@@ -46,19 +46,30 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
 }
 
 const processRepository = async (owner: string, repo: string, dryRun: boolean, octokit: Octokit) => {
+  core.startGroup(`GraphQL: listPullRequest(${owner}/${repo})`)
   const listPullRequestQuery = await listPullRequest(octokit, { owner, repo })
-  core.startGroup(`ListPullRequestQuery(${owner}/${repo})`)
   core.info(JSON.stringify(listPullRequestQuery, undefined, 2))
   core.endGroup()
 
   const pulls = parseListPullRequestQuery(listPullRequestQuery)
-  for (const pull of pulls) {
-    const action = determinePullRequestAction(pull)
-    core.info(`Pull Request ${owner}/${repo}#${pull.number}: ${action.toString()}`)
+  const actions = pulls.map((pull) => determinePullRequestAction(pull))
+
+  core.summary.addHeading('renovate-merge-bot summary', 2)
+  core.summary.addTable([
+    [
+      { data: 'Pull Request', header: true },
+      { data: 'Action', header: true },
+    ],
+    ...actions.map((action) => [`${action.pull.owner}/${action.pull.repo}#${action.pull.number}`, action.toString()]),
+  ])
+  await core.summary.write()
+
+  for (const action of actions) {
     if (dryRun) {
-      core.info(`(dry-run)`)
+      core.info(`${action.pull.owner}/${action.pull.repo}#${action.pull.number}: ${action.toString()} (dry-run)`)
     } else {
-      await action.execute(octokit, pull)
+      core.info(`${action.pull.owner}/${action.pull.repo}#${action.pull.number}: ${action.toString()}`)
+      await action.execute(octokit)
     }
   }
 }
