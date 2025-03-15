@@ -20,6 +20,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
   const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
   assert(authenticated)
   core.info(`Authenticated as ${authenticated.name}`)
+  core.summary.addHeading('renovate-merge-bot summary')
   await processInstallations(inputs, octokit)
 }
 
@@ -38,11 +39,23 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
     privateKey: inputs.appPrivateKey,
     installationId,
   })
+  const actions = []
   const repositories = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, { per_page: 100 })
   for (const repository of repositories) {
     core.info(`Processing the repository ${repository.owner.login}`)
-    await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
+    const repositoryActions = await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
+    actions.push(...repositoryActions)
   }
+
+  core.summary.addHeading(`GitHub App Installation ${installationId}`)
+  core.summary.addTable([
+    [
+      { data: 'Pull Request', header: true },
+      { data: 'Action', header: true },
+    ],
+    ...actions.map((action) => [`${action.pull.owner}/${action.pull.repo}#${action.pull.number}`, action.toString()]),
+  ])
+  await core.summary.write()
 }
 
 const processRepository = async (owner: string, repo: string, dryRun: boolean, octokit: Octokit) => {
@@ -53,17 +66,6 @@ const processRepository = async (owner: string, repo: string, dryRun: boolean, o
 
   const pulls = parseListPullRequestQuery(listPullRequestQuery)
   const actions = pulls.map((pull) => determinePullRequestAction(pull))
-
-  core.summary.addHeading('renovate-merge-bot summary', 2)
-  core.summary.addTable([
-    [
-      { data: 'Pull Request', header: true },
-      { data: 'Action', header: true },
-    ],
-    ...actions.map((action) => [`${action.pull.owner}/${action.pull.repo}#${action.pull.number}`, action.toString()]),
-  ])
-  await core.summary.write()
-
   for (const action of actions) {
     if (dryRun) {
       core.info(`${action.pull.owner}/${action.pull.repo}#${action.pull.number}: ${action.toString()} (dry-run)`)
@@ -72,4 +74,5 @@ const processRepository = async (owner: string, repo: string, dryRun: boolean, o
       await action.execute(octokit)
     }
   }
+  return actions
 }
