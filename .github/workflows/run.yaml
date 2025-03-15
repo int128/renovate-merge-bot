@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: int128/renovate-merge-bot@33df6dd40519ec3a4eeb2842f3d9612f580e0456 # v1.49.0
+      - uses: int128/renovate-merge-bot@2c1cb97094dfef56e647c0566252acb5830e9b04 # v1.53.0
         with:
           github-app-id: ${{ secrets.BOT_APP_ID }}
           github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
