@@ -1,3 +1,4 @@
+import assert from 'assert'
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
 import { StrategyOptions, createAppAuth } from '@octokit/auth-app'
@@ -21,6 +22,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
     auth,
   })
   const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
+  assert(authenticated)
   core.info(`Authenticated as ${authenticated.name}`)
   const installations = await octokit.paginate(octokit.apps.listInstallations, {
     per_page: 100,
