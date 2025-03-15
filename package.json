@@ -11,7 +11,7 @@
   "dependencies": {
     "@actions/core": "1.11.1",
     "@octokit/auth-app": "7.1.0",
-    "@octokit/rest": "20.1.0",
+    "@octokit/rest": "21.1.1",
     "graphql": "16.10.0"
   },
   "devDependencies": {
