@@ -20,6 +20,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
   const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
   assert(authenticated)
   core.info(`Authenticated as ${authenticated.name}`)
+  core.summary.addHeading('renovate-merge-bot summary', 2)
   await processInstallations(inputs, octokit)
 }
 
@@ -38,27 +39,40 @@ const processInstallation = async (inputs: Inputs, installationId: number) => {
     privateKey: inputs.appPrivateKey,
     installationId,
   })
+  const actions = []
   const repositories = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, { per_page: 100 })
   for (const repository of repositories) {
     core.info(`Processing the repository ${repository.owner.login}`)
-    await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
+    const repositoryActions = await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
+    actions.push(...repositoryActions)
   }
+
+  core.summary.addHeading(`GitHub App Installation ${installationId}`, 3)
+  core.summary.addTable([
+    [
+      { data: 'Pull Request', header: true },
+      { data: 'Action', header: true },
+    ],
+    ...actions.map((action) => [`${action.pull.owner}/${action.pull.repo}#${action.pull.number}`, action.toString()]),
+  ])
+  await core.summary.write()
 }
 
 const processRepository = async (owner: string, repo: string, dryRun: boolean, octokit: Octokit) => {
+  core.startGroup(`GraphQL: listPullRequest(${owner}/${repo})`)
   const listPullRequestQuery = await listPullRequest(octokit, { owner, repo })
-  core.startGroup(`ListPullRequestQuery(${owner}/${repo})`)
   core.info(JSON.stringify(listPullRequestQuery, undefined, 2))
   core.endGroup()
 
   const pulls = parseListPullRequestQuery(listPullRequestQuery)
-  for (const pull of pulls) {
-    const action = determinePullRequestAction(pull)
-    core.info(`Pull Request ${owner}/${repo}#${pull.number}: ${action.toString()}`)
+  const actions = pulls.map((pull) => determinePullRequestAction(pull))
+  for (const action of actions) {
     if (dryRun) {
-      core.info(`(dry-run)`)
+      core.info(`${action.pull.owner}/${action.pull.repo}#${action.pull.number}: ${action.toString()} (dry-run)`)
     } else {
-      await action.execute(octokit, pull)
+      core.info(`${action.pull.owner}/${action.pull.repo}#${action.pull.number}: ${action.toString()}`)
+      await action.execute(octokit)
     }
   }
+  return actions
 }
