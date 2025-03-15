@@ -1,9 +1,9 @@
 import assert from 'assert'
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/rest'
-import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
-import { listPullRequest } from './queries/listPullRequest.js'
 import { getOctokit } from './github.js'
+import { listPullRequest } from './queries/listPullRequest.js'
+import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
 
 type Inputs = {
   appId: string
