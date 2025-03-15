@@ -1,3 +1,4 @@
+import { describe, expect, it, test } from 'vitest'
 import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types.js'
 import {
   AddEmptyCommitAction,
@@ -10,7 +11,7 @@ import {
 import { payload } from './fixtures/pulls.js'
 
 describe('parseListPullRequestQuery', () => {
-  test('parse an actual payload of GitHub GraphQL API', () => {
+  it('parses an actual payload of GitHub GraphQL API', () => {
     expect(parseListPullRequestQuery(payload)).toStrictEqual<PullRequest[]>([
       {
         automerge: false,
