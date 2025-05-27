@@ -10,8 +10,8 @@
   "type": "module",
   "dependencies": {
     "@actions/core": "1.11.1",
-    "@octokit/auth-app": "7.2.1",
-    "@octokit/rest": "21.1.1",
+    "@octokit/auth-app": "8.0.1",
+    "@octokit/rest": "22.0.0",
     "graphql": "16.11.0"
   },
   "devDependencies": {
