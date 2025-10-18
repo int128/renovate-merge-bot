@@ -1,9 +1,9 @@
-import assert from 'assert'
+import assert from 'node:assert'
 import * as core from '@actions/core'
-import { ListPullRequestQuery } from './generated/graphql.js'
-import { MergeableState, PullRequestMergeMethod, StatusState } from './generated/graphql-types.js'
+import type { Octokit } from '@octokit/rest'
+import type { ListPullRequestQuery } from './generated/graphql.js'
+import { MergeableState, type PullRequestMergeMethod, StatusState } from './generated/graphql-types.js'
 import { mergePullRequest } from './queries/mergePullRequest.js'
-import { Octokit } from '@octokit/rest'
 
 export type PullRequest = {
   owner: string

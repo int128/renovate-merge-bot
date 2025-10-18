@@ -1,4 +1,4 @@
-import { ListPullRequestQuery } from '../../src/generated/graphql.js'
+import type { ListPullRequestQuery } from '../../src/generated/graphql.js'
 import { MergeableState, PullRequestMergeMethod, StatusState } from '../../src/generated/graphql-types.js'
 
 /*
