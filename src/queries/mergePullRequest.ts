@@ -1,5 +1,5 @@
-import { Octokit } from '@octokit/rest'
-import { MergePullRequestMutation, MergePullRequestMutationVariables } from '../generated/graphql.js'
+import type { Octokit } from '@octokit/rest'
+import type { MergePullRequestMutation, MergePullRequestMutationVariables } from '../generated/graphql.js'
 
 const query = /* GraphQL */ `
   mutation mergePullRequest($id: ID!, $mergeMethod: PullRequestMergeMethod) {
@@ -11,7 +11,7 @@ const query = /* GraphQL */ `
 
 export const mergePullRequest = async (
   o: Octokit,
-  v: MergePullRequestMutationVariables
+  v: MergePullRequestMutationVariables,
 ): Promise<MergePullRequestMutation> => {
   return await o.graphql<MergePullRequestMutation>(query, v)
 }

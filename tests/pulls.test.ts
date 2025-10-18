@@ -2,10 +2,10 @@ import { describe, expect, it, test } from 'vitest'
 import { PullRequestMergeMethod, StatusState } from '../src/generated/graphql-types.js'
 import {
   AddEmptyCommitAction,
+  determinePullRequestAction,
   LeaveAction,
   MergeAction,
-  PullRequest,
-  determinePullRequestAction,
+  type PullRequest,
   parseListPullRequestQuery,
 } from '../src/pulls.js'
 import { payload } from './fixtures/pulls.js'
