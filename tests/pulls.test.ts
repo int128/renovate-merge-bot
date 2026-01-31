@@ -110,7 +110,7 @@ describe('determinePullRequestAction', () => {
     expect(action).toBeInstanceOf(LeaveAction)
   })
 
-  test('last commit was by GITHUB_TOKEN and workflow was not run', () => {
+  test('last commit was by GITHUB_TOKEN', () => {
     const action = determinePullRequestAction(
       {
         ...pullFixture,
