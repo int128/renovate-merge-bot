@@ -66,7 +66,7 @@ export const determinePullRequestAction = (pull: PullRequest, now: Date = new Da
   if (!pull.mergeable) {
     return new LeaveAction(pull)
   }
-  if (pull.lastCommitByGitHubToken && pull.lastCommitStatus === undefined) {
+  if (pull.lastCommitByGitHubToken) {
     return new AddEmptyCommitAction(pull)
   }
   const elapsedSec = (now.getTime() - pull.lastCommitTime.getTime()) / 1000
