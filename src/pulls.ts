@@ -82,7 +82,7 @@ export class AddEmptyCommitAction implements PullRequestAction {
     this.pull = pull
   }
   toString(): string {
-    return `Add an empty commit to trigger GitHub Actions, because the last committer was GITHUB_TOKEN`
+    return `AddEmptyCommit`
   }
   async execute(octokit: Octokit) {
     core.info(`Creating an empty commit on ${this.pull.lastCommitSha}`)
@@ -110,7 +110,7 @@ export class MergeAction implements PullRequestAction {
     this.pull = pull
   }
   toString(): string {
-    return `Ready to automerge`
+    return `Merge(${this.pull.defaultMergeMethod})`
   }
   async execute(octokit: Octokit) {
     core.info(`Merging by method ${this.pull.defaultMergeMethod}`)
@@ -127,7 +127,7 @@ export class LeaveAction implements PullRequestAction {
     this.pull = pull
   }
   toString(): string {
-    return `Will be merged by user`
+    return `Leave`
   }
   execute(): Promise<void> {
     return new Promise((r) => r())
