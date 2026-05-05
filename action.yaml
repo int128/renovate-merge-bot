@@ -1,4 +1,4 @@
-name: trigger-github-actions-bot
+name: trigger-actions-bot
 description: Trigger GitHub Actions for GITHUB_TOKEN
 
 inputs:

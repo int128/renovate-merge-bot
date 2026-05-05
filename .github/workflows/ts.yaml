@@ -51,7 +51,7 @@ jobs:
       - run: corepack enable
       - run: pnpm i
       - run: pnpm build
-      - name: Run int128/trigger-github-actions-bot
+      - name: Run int128/trigger-actions-bot
         uses: ./
         with:
           dry-run: true

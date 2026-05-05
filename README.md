@@ -1,4 +1,4 @@
-# trigger-github-actions-bot [![ts](https://github.com/int128/trigger-github-actions-bot/actions/workflows/ts.yaml/badge.svg)](https://github.com/int128/trigger-github-actions-bot/actions/workflows/ts.yaml)
+# trigger-actions-bot [![ts](https://github.com/int128/trigger-actions-bot/actions/workflows/ts.yaml/badge.svg)](https://github.com/int128/trigger-actions-bot/actions/workflows/ts.yaml)
 
 This is an action to trigger GitHub Actions for `GITHUB_TOKEN`.
 
@@ -17,7 +17,7 @@ This action adds an empty commit to trigger GitHub Actions when a pull request s
 
 ### Create GitHub App
 
-Create your GitHub App from [this link](https://github.com/settings/apps/new?webhook_active=false&url=https://github.com/int128/trigger-github-actions-bot&contents=write).
+Create your GitHub App from [this link](https://github.com/settings/apps/new?webhook_active=false&url=https://github.com/int128/trigger-actions-bot&contents=write).
 Here are the required permissions:
 
 - Contents: read and write
@@ -44,7 +44,7 @@ on:
     - cron: "0 * * * *"
 
 jobs:
-  trigger-github-actions-bot:
+  trigger-actions-bot:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -53,7 +53,7 @@ jobs:
         with:
           client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-      - uses: int128/trigger-github-actions-bot@v2
+      - uses: int128/trigger-actions-bot@v2
         with:
           token: ${{ steps.app-token.outputs.token }}
 ```
