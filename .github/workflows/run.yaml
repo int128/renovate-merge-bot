@@ -14,11 +14,22 @@ on:
       - .github/workflows/run.yaml
 
 jobs:
-  renovate-merge-bot:
+  trigger-actions-bot:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment:
+      name: ${{ case(github.ref == 'refs/heads/main', 'production', '') }}
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
-      - uses: int128/renovate-merge-bot@abfb1a54449ecbd8df8176a48d9a67da0165c1e9 # v1.77.0
+      - if: github.ref == 'refs/heads/main'
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: app-token
         with:
-          github-app-id: ${{ secrets.BOT_APP_ID }}
-          github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          client-id: ${{ secrets.BOT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: int128/trigger-actions-bot@3b05cab23b9ab20600a56b9f7a7e1e7df05b30b7 # v2.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
