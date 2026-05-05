@@ -21,6 +21,7 @@ Create your GitHub App from [this link](https://github.com/settings/apps/new?web
 Here are the required permissions:
 
 - Contents: read and write
+- Pull requests: read
 
 Install the GitHub App to your repositories.
 
