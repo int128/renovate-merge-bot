@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import * as core from '@actions/core'
-import type { Octokit } from '@octokit/rest'
+import type { Octokit } from '@octokit/action'
 import type { ListPullRequestQuery } from './generated/graphql.js'
 
 export type PullRequest = {
