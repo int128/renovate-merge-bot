@@ -11,7 +11,7 @@ export const run = async (inputs: Inputs, octokit: Octokit): Promise<void> => {
   const actions = []
   const repositories = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, { per_page: 100 })
   for (const repository of repositories) {
-    core.info(`Processing the repository ${repository.owner.login}`)
+    core.info(`Processing the repository ${repository.full_name}`)
     const repositoryActions = await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
     actions.push(...repositoryActions)
   }

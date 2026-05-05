@@ -47,10 +47,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - uses: int128/trigger-github-actions-bot@v2
         with:
-          github-app-id: ${{ secrets.BOT_APP_ID }}
-          github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          token: ${{ steps.app-token.outputs.token }}
 ```
 
 This action finds open pull requests from repositories which the GitHub App is installed.
@@ -60,11 +64,10 @@ It adds an empty commit to trigger GitHub Actions.
 
 ### Inputs
 
-| Name                     | Default    | Description            |
-| ------------------------ | ---------- | ---------------------- |
-| `github-app-id`          | (required) | GitHub App ID          |
-| `github-app-private-key` | (required) | GitHub App private key |
-| `dry-run`                | `false`    | Dry-run                |
+| Name      | Default        | Description      |
+| --------- | -------------- | ---------------- |
+| `token`   | `github.token` | GitHub App token |
+| `dry-run` | `false`        | Dry-run          |
 
 ### Outputs
 
