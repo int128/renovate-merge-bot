@@ -14,11 +14,11 @@ on:
       - .github/workflows/run.yaml
 
 jobs:
-  trigger-github-actions-bot:
+  renovate-merge-bot:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: int128/trigger-github-actions-bot@abfb1a54449ecbd8df8176a48d9a67da0165c1e9 # v1.77.0
+      - uses: int128/renovate-merge-bot@abfb1a54449ecbd8df8176a48d9a67da0165c1e9 # v1.77.0
         with:
           github-app-id: ${{ secrets.BOT_APP_ID }}
           github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
