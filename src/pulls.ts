@@ -20,9 +20,9 @@ export const parseListPullRequestQuery = (pulls: ListPullRequestQuery): PullRequ
 
   const parsed: PullRequest[] = []
   for (const pull of pulls.repository.pullRequests.nodes) {
-    assert(pull != null)
-    assert(pull.headRef != null)
-    assert(pull.headRef.target != null)
+    assert(pull != null, `pull must not be null`)
+    assert(pull.headRef != null, `pull.headRef must not be null`)
+    assert(pull.headRef.target != null, `pull.headRef.target must not be null`)
     assert.strictEqual(pull.headRef.target.__typename, 'Commit')
 
     parsed.push({
@@ -31,7 +31,7 @@ export const parseListPullRequestQuery = (pulls: ListPullRequestQuery): PullRequ
       id: pull.id,
       number: pull.number,
       headRef: pull.headRef.name,
-      lastCommitByGitHubToken: pull.headRef.target.committer?.user?.login === 'github-actions[bot]',
+      lastCommitByGitHubToken: pull.headRef.target.author?.name === 'github-actions[bot]',
       lastCommitSha: pull.headRef.target.oid,
       lastCommitTreeSha: pull.headRef.target.tree.oid,
     })
