@@ -1,4 +1,4 @@
-import type { Octokit } from '@octokit/rest'
+import type { Octokit } from '@octokit/action'
 import type { ListPullRequestQuery, ListPullRequestQueryVariables } from '../generated/graphql.js'
 
 const query = /* GraphQL */ `
