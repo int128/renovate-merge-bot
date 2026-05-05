@@ -11,7 +11,7 @@ According to the specification of GitHub Actions, the default token of `GITHUB_T
 This action adds an empty commit to trigger GitHub Actions when a pull request satisfies the following conditions:
 
 - The pull request is open
-- The last committer is `GITHUB_TOKEN`
+- The last author is `github-actions[bot]`
 
 ## Getting Started
 

@@ -21,10 +21,8 @@ const query = /* GraphQL */ `
                 tree {
                   oid
                 }
-                committer {
-                  user {
-                    login
-                  }
+                author {
+                  name
                 }
               }
             }

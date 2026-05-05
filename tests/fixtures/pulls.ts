@@ -27,10 +27,8 @@ export const payload: ListPullRequestQuery = {
               tree: {
                 oid: '400a326555a92be4b755055c4203195eb4fda010',
               },
-              committer: {
-                user: {
-                  login: 'renovate[bot]',
-                },
+              author: {
+                name: 'renovate[bot]',
               },
             },
           },
@@ -46,10 +44,8 @@ export const payload: ListPullRequestQuery = {
               tree: {
                 oid: '8531bcd12dabf62565228111dc7028f29eddb682',
               },
-              committer: {
-                user: {
-                  login: 'github-actions[bot]',
-                },
+              author: {
+                name: 'github-actions[bot]',
               },
             },
           },
