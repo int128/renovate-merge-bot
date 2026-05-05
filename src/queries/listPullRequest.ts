@@ -1,4 +1,4 @@
-import type { Octokit } from '@octokit/rest'
+import type { Octokit } from '@octokit/action'
 import type { ListPullRequestQuery, ListPullRequestQueryVariables } from '../generated/graphql.js'
 
 const query = /* GraphQL */ `
@@ -8,16 +8,10 @@ const query = /* GraphQL */ `
         login
       }
       name
-      viewerDefaultMergeMethod
       pullRequests(states: [OPEN], orderBy: { field: UPDATED_AT, direction: DESC }, first: 100) {
         nodes {
           id
           number
-          author {
-            login
-          }
-          mergeable
-          bodyText
           headRef {
             name
             target {
@@ -27,14 +21,10 @@ const query = /* GraphQL */ `
                 tree {
                   oid
                 }
-                committedDate
                 committer {
                   user {
                     login
                   }
-                }
-                statusCheckRollup {
-                  state
                 }
               }
             }

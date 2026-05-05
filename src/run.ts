@@ -1,53 +1,21 @@
-import assert from 'node:assert'
 import * as core from '@actions/core'
-import type { Octokit } from '@octokit/rest'
-import { getOctokit } from './github.js'
+import type { Octokit } from '@octokit/action'
 import { determinePullRequestAction, parseListPullRequestQuery } from './pulls.js'
 import { listPullRequest } from './queries/listPullRequest.js'
 
 type Inputs = {
-  appId: string
-  appPrivateKey: string
   dryRun: boolean
 }
 
-export const run = async (inputs: Inputs): Promise<void> => {
-  const octokit = getOctokit({
-    type: 'app',
-    appId: inputs.appId,
-    privateKey: inputs.appPrivateKey,
-  })
-  const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
-  assert(authenticated)
-  core.info(`Authenticated as ${authenticated.name}`)
-  core.summary.addHeading('renovate-merge-bot summary', 2)
-  await processInstallations(inputs, octokit)
-}
-
-const processInstallations = async (inputs: Inputs, octokit: Octokit) => {
-  const installations = await octokit.paginate(octokit.apps.listInstallations, { per_page: 100 })
-  for (const installation of installations) {
-    core.info(`Processing the installation ${installation.id}`)
-    await processInstallation(inputs, installation.id)
-  }
-}
-
-const processInstallation = async (inputs: Inputs, installationId: number) => {
-  const octokit = getOctokit({
-    type: 'installation',
-    appId: inputs.appId,
-    privateKey: inputs.appPrivateKey,
-    installationId,
-  })
+export const run = async (inputs: Inputs, octokit: Octokit): Promise<void> => {
   const actions = []
   const repositories = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, { per_page: 100 })
   for (const repository of repositories) {
-    core.info(`Processing the repository ${repository.owner.login}`)
+    core.info(`Processing the repository ${repository.full_name}`)
     const repositoryActions = await processRepository(repository.owner.login, repository.name, inputs.dryRun, octokit)
     actions.push(...repositoryActions)
   }
 
-  core.summary.addHeading(`GitHub App Installation ${installationId}`, 3)
   core.summary.addTable([
     [
       { data: 'Pull Request', header: true },

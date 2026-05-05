@@ -1,8 +1,4 @@
-import { createAppAuth, type StrategyOptions } from '@octokit/auth-app'
-import { Octokit } from '@octokit/rest'
+import { Octokit } from '@octokit/action'
+import { retry } from '@octokit/plugin-retry'
 
-export const getOctokit = (auth: StrategyOptions) =>
-  new Octokit({
-    authStrategy: createAppAuth,
-    auth,
-  })
+export const getOctokit = () => new (Octokit.plugin(retry))()
