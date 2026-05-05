@@ -1,5 +1,5 @@
 name: renovate-merge-bot
-description: Auto-merge Renovate pull requests in GitHub Actions
+description: Trigger GitHub Actions for GITHUB_TOKEN
 
 inputs:
   github-app-id:
