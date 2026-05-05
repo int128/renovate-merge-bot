@@ -20,7 +20,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
   const { data: authenticated } = await octokit.rest.apps.getAuthenticated()
   assert(authenticated)
   core.info(`Authenticated as ${authenticated.name}`)
-  core.summary.addHeading('renovate-merge-bot summary', 2)
+  core.summary.addHeading('trigger-github-actions-bot summary', 2)
   await processInstallations(inputs, octokit)
 }
 

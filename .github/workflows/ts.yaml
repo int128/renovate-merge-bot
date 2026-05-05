@@ -37,7 +37,7 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
-      - name: Run int128/renovate-merge-bot
+      - name: Run int128/trigger-github-actions-bot
         uses: ./
         with:
           github-app-id: ${{ secrets.BOT_APP_ID }}

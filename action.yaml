@@ -1,4 +1,4 @@
-name: renovate-merge-bot
+name: trigger-github-actions-bot
 description: Trigger GitHub Actions for GITHUB_TOKEN
 
 inputs:

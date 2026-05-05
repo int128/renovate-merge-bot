@@ -1,4 +1,4 @@
-# renovate-merge-bot [![ts](https://github.com/int128/renovate-merge-bot/actions/workflows/ts.yaml/badge.svg)](https://github.com/int128/renovate-merge-bot/actions/workflows/ts.yaml)
+# trigger-github-actions-bot [![ts](https://github.com/int128/trigger-github-actions-bot/actions/workflows/ts.yaml/badge.svg)](https://github.com/int128/trigger-github-actions-bot/actions/workflows/ts.yaml)
 
 This is an action to trigger GitHub Actions for `GITHUB_TOKEN`.
 
@@ -17,7 +17,7 @@ This action adds an empty commit to trigger GitHub Actions when a pull request s
 
 ### Create GitHub App
 
-Create your GitHub App from [this link](https://github.com/settings/apps/new?webhook_active=false&url=https://github.com/int128/renovate-merge-bot&contents=write).
+Create your GitHub App from [this link](https://github.com/settings/apps/new?webhook_active=false&url=https://github.com/int128/trigger-github-actions-bot&contents=write).
 Here are the required permissions:
 
 - Contents: read and write
@@ -43,11 +43,11 @@ on:
     - cron: "0 * * * *"
 
 jobs:
-  renovate-merge-bot:
+  trigger-github-actions-bot:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: int128/renovate-merge-bot@v1
+      - uses: int128/trigger-github-actions-bot@v2
         with:
           github-app-id: ${{ secrets.BOT_APP_ID }}
           github-app-private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
