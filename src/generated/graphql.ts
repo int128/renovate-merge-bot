@@ -1,17 +1,21 @@
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import * as Types from './graphql-types.js';
 
-export type ListPullRequestQueryVariables = Types.Exact<{
-  owner: Types.Scalars['String']['input'];
-  repo: Types.Scalars['String']['input'];
+export type ListPullRequestQueryVariables = Exact<{
+  owner: string;
+  repo: string;
 }>;
 
 
-export type ListPullRequestQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', name: string, owner:
-      | { __typename?: 'Organization', login: string }
-      | { __typename?: 'User', login: string }
-    , pullRequests: { __typename?: 'PullRequestConnection', nodes?: Array<{ __typename?: 'PullRequest', id: string, number: number, headRef?: { __typename?: 'Ref', name: string, target?:
+export type ListPullRequestQuery = { repository: { name: string, owner:
+      | { login: string }
+      | { login: string }
+    , pullRequests: { nodes: Array<{ id: string, number: number, headRef: { name: string, target:
             | { __typename: 'Blob' }
-            | { __typename: 'Commit', oid: string, tree: { __typename?: 'Tree', oid: string }, author?: { __typename?: 'GitActor', name?: string | null } | null }
+            | { __typename: 'Commit', oid: string, tree: { oid: string }, author: { name: string | null } | null }
             | { __typename: 'Tag' }
             | { __typename: 'Tree' }
            | null } | null } | null> | null } } | null };
