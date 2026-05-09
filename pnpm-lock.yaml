@@ -336,8 +336,8 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
-  '@graphql-codegen/visitor-plugin-common@7.0.1':
-    resolution: {integrity: sha512-Ck/9VSSE+VqXJtNymvh39DhcrydxHNzl/RK7F3sYf/HYopsggP168x5rcXBacFiepdat4dxXGQXTFtSxIgyETQ==}
+  '@graphql-codegen/visitor-plugin-common@7.0.2':
+    resolution: {integrity: sha512-3v1dPjkSiAIsqwZ/6btSZ6BCYlYYpr3FdLhsBZ/JoPP2hYgN6AlGKdUyhYm5FsgDKU04L7al3+rfnTOCxqM0gw==}
     engines: {node: '>=16'}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
@@ -934,8 +934,8 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  baseline-browser-mapping@2.10.28:
-    resolution: {integrity: sha512-Ic44hnOtFIgravCunj1ifSoQPSUrkNiJuH9Mf6jr2jjoA74icqV8wU0KuadXeOR8zuIJMOoTv0GuQjZ9ZYNMeA==}
+  baseline-browser-mapping@2.10.29:
+    resolution: {integrity: sha512-Asa2krT+XTPZINCS+2QcyS8WTkObE77RwkydwF7h6DmnKqbvlalz93m/dnphUyCa6SWSP51VgtEUf2FN+gelFQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -2180,7 +2180,7 @@ snapshots:
       '@graphql-codegen/typed-document-node': 7.0.0(graphql@16.13.2)
       '@graphql-codegen/typescript': 6.0.0(graphql@16.13.2)
       '@graphql-codegen/typescript-operations': 6.0.0(graphql@16.13.2)
-      '@graphql-codegen/visitor-plugin-common': 7.0.1(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 7.0.2(graphql@16.13.2)
       '@graphql-tools/documents': 1.0.1(graphql@16.13.2)
       '@graphql-tools/utils': 11.1.0(graphql@16.13.2)
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.13.2)
@@ -2198,7 +2198,7 @@ snapshots:
   '@graphql-codegen/gql-tag-operations@6.0.0(graphql@16.13.2)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 7.0.0(graphql@16.13.2)
-      '@graphql-codegen/visitor-plugin-common': 7.0.1(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 7.0.2(graphql@16.13.2)
       '@graphql-tools/utils': 11.1.0(graphql@16.13.2)
       auto-bind: 5.0.1
       graphql: 16.13.2
@@ -2240,7 +2240,7 @@ snapshots:
   '@graphql-codegen/typed-document-node@7.0.0(graphql@16.13.2)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 7.0.0(graphql@16.13.2)
-      '@graphql-codegen/visitor-plugin-common': 7.0.1(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 7.0.2(graphql@16.13.2)
       auto-bind: 5.0.1
       change-case-all: 2.1.0
       graphql: 16.13.2
@@ -2250,7 +2250,7 @@ snapshots:
     dependencies:
       '@graphql-codegen/plugin-helpers': 7.0.0(graphql@16.13.2)
       '@graphql-codegen/schema-ast': 6.0.0(graphql@16.13.2)
-      '@graphql-codegen/visitor-plugin-common': 7.0.1(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 7.0.2(graphql@16.13.2)
       auto-bind: 5.0.1
       graphql: 16.13.2
       tslib: 2.8.1
@@ -2259,7 +2259,7 @@ snapshots:
     dependencies:
       '@graphql-codegen/plugin-helpers': 7.0.0(graphql@16.13.2)
       '@graphql-codegen/schema-ast': 6.0.0(graphql@16.13.2)
-      '@graphql-codegen/visitor-plugin-common': 7.0.1(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 7.0.2(graphql@16.13.2)
       auto-bind: 5.0.1
       graphql: 16.13.2
       tslib: 2.6.3
@@ -2278,7 +2278,7 @@ snapshots:
       parse-filepath: 1.0.2
       tslib: 2.8.1
 
-  '@graphql-codegen/visitor-plugin-common@7.0.1(graphql@16.13.2)':
+  '@graphql-codegen/visitor-plugin-common@7.0.2(graphql@16.13.2)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 7.0.0(graphql@16.13.2)
       '@graphql-tools/optimize': 2.0.0(graphql@16.13.2)
@@ -2937,7 +2937,7 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  baseline-browser-mapping@2.10.28: {}
+  baseline-browser-mapping@2.10.29: {}
 
   before-after-hook@4.0.0: {}
 
@@ -2953,7 +2953,7 @@ snapshots:
 
   browserslist@4.28.2:
     dependencies:
-      baseline-browser-mapping: 2.10.28
+      baseline-browser-mapping: 2.10.29
       caniuse-lite: 1.0.30001792
       electron-to-chromium: 1.5.353
       node-releases: 2.0.38
