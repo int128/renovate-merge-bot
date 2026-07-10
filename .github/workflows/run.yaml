@@ -30,6 +30,6 @@ jobs:
           client-id: ${{ secrets.BOT_APP_CLIENT_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: int128/trigger-actions-bot@39484f2fc5f060caa83d8c0064a9993297991ebe # v2.9.0
+      - uses: int128/trigger-actions-bot@654821a2f6992a280ebf8aeac9795243b744fb9e # v2.10.0
         with:
           token: ${{ steps.app-token.outputs.token || github.token }}
